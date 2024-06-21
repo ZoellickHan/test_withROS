@@ -24,20 +24,13 @@ extern "C" int ioctl(int d, int request, ...);
 Port::Port(std::shared_ptr<SerialConfig> ptr)
 {	
 	config = ptr;
-	memset(TxBuff, 0x00, ROSCOMM_BUFFER_SIZE);
-	memset(RxBuff, 0x00, ROSCOMM_BUFFER_SIZE);
-	memset(readBuffer, 0x00, BUFFER_SIZE);
 }
 
 /**
  * use this to init the port at first, then open
 */
 bool Port::init()
-{
-    memset(RxBuff,0x00,ROSCOMM_BUFFER_SIZE);
-    memset(TxBuff,0x00,ROSCOMM_BUFFER_SIZE);
-	memset(readBuffer,0x00,BUFFER_SIZE);
-	
+{	
 	// init port 
     struct termios newtio;
 	struct termios oldtio;
