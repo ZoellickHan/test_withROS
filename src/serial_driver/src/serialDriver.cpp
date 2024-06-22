@@ -1,4 +1,4 @@
-#include "serialDriver.hpp"
+#include "serial_driver/serialDriver.hpp"
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
@@ -10,7 +10,6 @@
 #include <sys/stat.h>
 #include <signal.h>
 #include <getopt.h>
-#include "protocol.hpp" 
 
 #define termios asmtermios
 #include <asm/termios.h>

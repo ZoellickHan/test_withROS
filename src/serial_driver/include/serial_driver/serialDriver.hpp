@@ -92,5 +92,5 @@ namespace serial_driver
         bool isopen          = false;
         //rx thread
         PkgState            frameState;
-    }
+    };
 }

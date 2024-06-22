@@ -7,9 +7,11 @@
 
 #include <rclcpp/rclcpp.hpp>
 #include <std_msgs/msg/string.hpp>
-#include  "serialDriver.hpp"
 #include <deque>
 
+#include "serial_driver/protocol.hpp"
+#include "serial_driver/crc.hpp"
+#include  "serialDriver.hpp"
 namespace serial_driver
 {
 
@@ -19,9 +21,14 @@ public:
   ReadNode();
 
 private:
+  //info
+    rclcpp::Publisher<TwoCRC_GimbalMsg>::SharedPtr gimabal_msg_;
+    rclcpp::Publisher<TwoCRC_SentryGimbalMsg>::SharedPtr sentry_gimbal_msg_;
+    
     //function
     PkgState decode();
     int receive();
+    void classify(uint8_t* data);
 
     std::shared_ptr<SerialConfig> config =  
     std::make_shared<SerialConfig>(2000000,8,false,StopBit::TWO,Parity::NONE);

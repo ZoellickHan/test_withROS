@@ -1,6 +1,5 @@
 #include "serial_driver/ReadNode.hpp"
-#include "protocol.hpp"
-#include "crc.hpp"
+
 
 /**
  * TODO:
@@ -18,8 +17,8 @@ namespace serial_driver
 
 ReadNode::ReadNode() : Node("read")
 {
-    publisher_ = this->create_publisher<std_msgs::msg::String>("topic", 10);
-    
+    //create the publisher
+    gimabal_msg_ = this->create_publisher<TwoCRC_GimbalMsg>("gimbal msg", 10);
     //open the port
     while(true)
     {
@@ -65,7 +64,7 @@ PkgState ReadNode::decode()
                 return PkgState::CRC_HEADER_ERRROR;
             }
 
-            header = arrayToStruct<Header>(decodeBuffer);
+            this->header = arrayToStruct<Header>(decodeBuffer);
             memset(decodeBuffer,0x00,sizeof(decodeBuffer));
 
             // pkg length = payload(dataLen) + header len (include header crc) + 2crc 
@@ -88,12 +87,34 @@ PkgState ReadNode::decode()
                 return PkgState::CRC_PKG_ERROR;
             }
 
-            // debuginfo(); 
+            
             memset(decodeBuffer,0x00,sizeof(decodeBuffer));
             buffer.erase(buffer.begin(), buffer.begin() + i + header.dataLen + sizeof(Header) + 2);
             bag_sum ++;
+            classify(decodeBuffer); 
             return PkgState::COMPLETE;
         }
+    }
+}
+
+void ReadNode::classify(uint8_t* data)
+{
+    Header header = arrayToStruct<Header>(data);
+    TwoCRC_GimbalMsg twoCRC_GimbalMsg;
+    TwoCRC_SentryGimbalMsg twoCRC_SentryGimbalMsg;
+    switch (header.protocolID)
+    {
+    case CommunicationType::TWOCRC_GIMBAL_MSG :
+        twoCRC_GimbalMsg = arrayToStruct<TwoCRC_GimbalMsg>(data);
+        // gimabal_msg_ -> publish(twoCRC_GimbalMsg);
+        break;
+    
+    case CommunicationType::TWOCRC_SENTRY_GIMBAL_MSG :
+        twoCRC_SentryGimbalMsg = arrayToStruct<TwoCRC_SentryGimbalMsg>(data);
+        // sentry_gimbal_msg_ -> publish(twoCRC_SentryGimbalMsg);        
+        break;
+    default:
+        break;
     }
 }
 
@@ -114,15 +135,4 @@ int ReadNode::receive()
     }
 }
 
-int main(int argc, char *argv[])
-{
-  rclcpp::init(argc, argv);
-
-
-
-
-  rclcpp::spin(std::make_shared<ReadNode>());
-  rclcpp::shutdown();
-  return 0;
-}
 }//serial_driver

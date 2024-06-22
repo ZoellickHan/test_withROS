@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.8)
-project(serial_driver)
+project(test_sub)
 
 if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   add_compile_options(-Wall -Wextra -Wpedantic)
@@ -29,17 +29,14 @@ include_directories(
   include
 )
 
-add_executable(serial_driver
-  src/ReadNode.cpp
-  src/serialDriver.cpp
-  src/crc.cpp
-  src/main.cpp
+add_executable(test_sub
+  src/test_sub.cpp
 )
 
-ament_target_dependencies(serial_driver rclcpp std_msgs)
+ament_target_dependencies(test_sub rclcpp std_msgs)
 
 install(TARGETS
-  serial_driver
+  test_sub
   DESTINATION lib/${PROJECT_NAME}
 )
 
